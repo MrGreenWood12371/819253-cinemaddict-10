@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Никита Косарев](https://up.htmlacademy.ru/ecmascript/10/user/819253).
-* Наставник: `Неизвестно`.
+* Наставник: [Максим Каськов](https://htmlacademy.ru/profile/id1264689).
 
 ---
 
