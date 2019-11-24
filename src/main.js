@@ -2,18 +2,15 @@
 
 const FILMS_COUNT = 5;
 
-const createHeaderTemplate = () => {
-  return (
-    `<section class="header__profile profile">
+const createHeaderTemplate = () =>
+  `<section class="header__profile profile">
       <p class="profile__rating">Movie Buff</p>
       <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    </section>`
-  );
-};
+    </section>`;
 
-const createMenuTemplate = () => {
-  return (
-    `<nav class="main-navigation">
+
+const createMenuTemplate = () =>
+  `<nav class="main-navigation">
       <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
       <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
       <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
@@ -26,9 +23,7 @@ const createMenuTemplate = () => {
       <li><a href="#" class="sort__button">Sort by date</a></li>
       <li><a href="#" class="sort__button">Sort by rating</a></li>
     </ul>
-    `
-  );
-};
+    `;
 
 const createFilmsContainerTemplate = () =>
   `<section class="films">
@@ -250,7 +245,6 @@ render(siteMainElement, createFilmsContainerTemplate(), `beforeend`);
 const films = siteMainElement.querySelector(`.films`);
 const filmsList = siteMainElement.querySelector(`.films-list`);
 const filmsContainer = filmsList.querySelector(`.films-list__container`);
-// const topFilmsContainer = siteMainElement.querySelectorAll(`.films-list--extra`);
 
 for (let i = 0; i < FILMS_COUNT; i++) {
   render(filmsContainer, createCardTemplate(), `beforeend`);
