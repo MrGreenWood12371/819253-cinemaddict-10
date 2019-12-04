@@ -1,57 +1,89 @@
 import {createHeaderTemplate} from './components/header.js';
-import {createMenuTemplate} from './components/menu.js';
-import {createFilmsContainerTemplate} from './components/filmsContainer.js';
+import {getMainContentTemplate} from './components/main.js';
 import {createCardTemplate} from './components/card.js';
 import {createFilmDetailTemplate} from './components/filmDetail.js';
+import {getFiltersTemplate} from './components/filter.js';
+import {getShowMoreButtonTemplate} from './components/show-more-button.js';
+import {generateCards} from './mock/card.js';
+import {getUserRank} from './mock/user-rank.js';
 
-const FILMS_COUNT = 5;
+const FilmCount = {
+  ALL: 15,
+  LIST: 5,
+  EXTRA: 2,
+};
 
-const createButtonShowMoreTemplate = () => `<button class="films-list__show-more">Show more</button>`;
+const cards = generateCards(FilmCount.ALL);
+
+const topRatedCards = cards
+.slice()
+.sort((prev, next) => next.rating - prev.rating)
+.slice(0, 2)
+.filter((card) => card.rating);
+
+const mostCommentedCards = cards
+.slice()
+.sort((prev, next) => next.comments.length - prev.comments.length)
+.slice(0, 2)
+.filter((card) => card.comments.length);
+
+const headerElement = document.querySelector(`.header`);
+const footerElement = document.querySelector(`.footer`);
+const mainElement = document.querySelector(`.main`);
+
+const onWatchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
+
+const onHistoryFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
+
+const onFavoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const siteHeaderElement = document.querySelector(`.header`);
+render(headerElement, createHeaderTemplate(getUserRank()), `beforeEnd`);
 
-render(siteHeaderElement, createHeaderTemplate(), `beforeend`);
+render(footerElement, createFilmDetailTemplate(cards[0]), `afterEnd`);
 
-const siteMainElement = document.querySelector(`.main`);
+render(mainElement, getFiltersTemplate(onWatchListFilmsQuantity(), onHistoryFilmsQuantity(), onFavoritesFilmsQuantity()), `beforeEnd`);
 
-render(siteMainElement, createMenuTemplate(), `beforeend`);
-render(siteMainElement, createFilmsContainerTemplate(), `beforeend`);
+render(mainElement, getMainContentTemplate(), `beforeEnd`);
 
-const films = siteMainElement.querySelector(`.films`);
-const filmsList = siteMainElement.querySelector(`.films-list`);
-const filmsContainer = filmsList.querySelector(`.films-list__container`);
+const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
+let showingCardsCount = FilmCount.LIST;
 
-for (let i = 0; i < FILMS_COUNT; i++) {
-  render(filmsContainer, createCardTemplate(), `beforeend`);
+const setList = (start, end) => cards.slice(start, end).forEach((card) => render(filmListContainerElement, createCardTemplate(card), `beforeend`));
+
+setList(0, showingCardsCount);
+
+render(filmListContainerElement, getShowMoreButtonTemplate(), `afterEnd`);
+
+const [topRatedElements, mostCommentedElements] = mainElement.querySelectorAll(`.films-list--extra`);
+const topRatedContentElements = topRatedElements.querySelector(`.films-list__container`);
+const mostCommentedContentElements = mostCommentedElements.querySelector(`.films-list__container`);
+
+if (topRatedCards.length) {
+  topRatedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(topRatedContentElements, createCardTemplate(card), `beforeend`));
+} else {
+  topRatedElements.remove();
 }
 
-const renderTopFilms = () => {
-  let card = ``;
+if (mostCommentedCards.length) {
+  mostCommentedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(mostCommentedContentElements, createCardTemplate(card), `beforeend`));
+} else {
+  mostCommentedElements.remove();
+}
 
-  for (let i = 0; i < 2; i++) {
-    card += createCardTemplate();
+const showMoreButtonElement = mainElement.querySelector(`.films-list__show-more`);
+showMoreButtonElement.addEventListener(`click`, () => {
+  const prevTasksCount = showingCardsCount;
+  showingCardsCount += FilmCount.LIST;
+
+  setList(prevTasksCount, showingCardsCount);
+
+  if (showingCardsCount >= cards.length) {
+    showMoreButtonElement.remove();
   }
-  return card;
-};
+});
 
-const renderTopRatedTemplate = (title) =>
-  `<section class="films-list--extra">
-  <h2 class="films-list__title">${title}</h2>
-
-  <div class="films-list__container">
-    ${renderTopFilms()}
-  </div>
-</section>
-`;
-
-render(filmsList, createButtonShowMoreTemplate(), `beforeend`);
-
-render(films, renderTopRatedTemplate(`Top rated`), `beforeend`);
-render(films, renderTopRatedTemplate(`Most commented`), `beforeend`);
-
-
-render(siteMainElement, createFilmDetailTemplate(), `beforeend`);
+footerElement.querySelector(`.footer__statistics p`).textContent = `${cards.length} movies inside`;
