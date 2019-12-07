@@ -1,37 +1,37 @@
+const getGenresTemplate = (genres) => {
+  return genres
+  .map((genre) => `<span class="film-details__genre">${genre}</span>`)
+  .join(`\n`);
+};
+
+const getCommentsTemplate = (comments) => {
+  return comments
+  .map((comment) => {
+    return (`<li class="film-details__comment">
+          <span class="film-details__comment-emoji">
+            <img src="${comment.emoji}" width="55" height="55" alt="emoji">
+          </span>
+          <div>
+            <p class="film-details__comment-text">${comment.text}</p>
+            <p class="film-details__comment-info">
+              <span class="film-details__comment-author">${comment.author}</span>
+              <span class="film-details__comment-day">${comment.date}</span>
+              <button class="film-details__comment-delete">Delete</button>
+            </p>
+          </div>
+        </li>`
+    );
+  })
+  .join(`\n`);
+};
+
 export const createFilmDetailTemplate = (card) => {
   const release = card.releaseDate
   .toDateString()
   .slice(4);
 
-  const getGenresTemplate = (genres) => {
-    return genres
-    .map((genre) => `<span class="film-details__genre">${genre}</span>`)
-    .join(`\n`);
-  };
-
-  const getCommentsTemplate = (comments) => {
-    return comments
-    .map((comment) => {
-      return (`<li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img src="${comment.emoji}" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p class="film-details__comment-text">${comment.text}</p>
-              <p class="film-details__comment-info">
-                <span class="film-details__comment-author">${comment.author}</span>
-                <span class="film-details__comment-day">${comment.date}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`
-      );
-    })
-    .join(`\n`);
-  };
-
   return (
-    `<section class="film-details">
+    `<section class="film-details" style="display: none;">
   <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">

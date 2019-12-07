@@ -6,53 +6,38 @@ import {getFiltersTemplate} from './components/filter.js';
 import {getShowMoreButtonTemplate} from './components/show-more-button.js';
 import {generateCards} from './mock/card.js';
 import {getUserRank} from './mock/user-rank.js';
-
-const FilmCount = {
-  ALL: 15,
-  LIST: 5,
-  EXTRA: 2,
-};
+import {getElement} from './util.js';
+import {getFilteredElement} from './util.js';
+import {FilmCount} from './constants.js';
 
 const cards = generateCards(FilmCount.ALL);
 
-const topRatedCards = cards
-.slice()
-.sort((prev, next) => next.rating - prev.rating)
-.slice(0, 2)
-.filter((card) => card.rating);
+const topRatedCards = getFilteredElement(cards, `rating`);
 
-const mostCommentedCards = cards
-.slice()
-.sort((prev, next) => next.comments.length - prev.comments.length)
-.slice(0, 2)
-.filter((card) => card.comments.length);
+const mostCommentedCards = getFilteredElement(cards, `comments`, length);
 
-const headerElement = document.querySelector(`.header`);
-const footerElement = document.querySelector(`.footer`);
-const mainElement = document.querySelector(`.main`);
+const headerElement = getElement(document, `.header`);
+const footerElement = getElement(document, `.footer`);
+const mainElement = getElement(document, `.main`);
 
-const onWatchListFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnWatchList ? 1 : 0), 0);
+const getFilmsQuantity = (key) => cards.reduce((sum, item) => sum + (item[key] ? 1 : 0), 0);
 
-const onHistoryFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnHistory ? 1 : 0), 0);
-
-const onFavoritesFilmsQuantity = () => cards.reduce((sum, item) => sum + (item.isOnFavorites ? 1 : 0), 0);
-
-const render = (container, template, place) => {
+const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(headerElement, createHeaderTemplate(getUserRank()), `beforeEnd`);
+render(headerElement, createHeaderTemplate(getUserRank()));
 
 render(footerElement, createFilmDetailTemplate(cards[0]), `afterEnd`);
 
-render(mainElement, getFiltersTemplate(onWatchListFilmsQuantity(), onHistoryFilmsQuantity(), onFavoritesFilmsQuantity()), `beforeEnd`);
+render(mainElement, getFiltersTemplate(getFilmsQuantity(`isOnWatchList`), getFilmsQuantity(`isOnHistory`), getFilmsQuantity(`isOnFavorites`)));
 
-render(mainElement, getMainContentTemplate(), `beforeEnd`);
+render(mainElement, getMainContentTemplate());
 
 const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
 let showingCardsCount = FilmCount.LIST;
 
-const setList = (start, end) => cards.slice(start, end).forEach((card) => render(filmListContainerElement, createCardTemplate(card), `beforeend`));
+const setList = (start, end) => cards.slice(start, end).forEach((card) => render(filmListContainerElement, createCardTemplate(card)));
 
 setList(0, showingCardsCount);
 
@@ -63,13 +48,13 @@ const topRatedContentElements = topRatedElements.querySelector(`.films-list__con
 const mostCommentedContentElements = mostCommentedElements.querySelector(`.films-list__container`);
 
 if (topRatedCards.length) {
-  topRatedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(topRatedContentElements, createCardTemplate(card), `beforeend`));
+  topRatedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(topRatedContentElements, createCardTemplate(card)));
 } else {
   topRatedElements.remove();
 }
 
 if (mostCommentedCards.length) {
-  mostCommentedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(mostCommentedContentElements, createCardTemplate(card), `beforeend`));
+  mostCommentedCards.slice(0, FilmCount.EXTRA).forEach((card) => render(mostCommentedContentElements, createCardTemplate(card)));
 } else {
   mostCommentedElements.remove();
 }
@@ -86,4 +71,9 @@ showMoreButtonElement.addEventListener(`click`, () => {
   }
 });
 
-footerElement.querySelector(`.footer__statistics p`).textContent = `${cards.length} movies inside`;
+const setFooterElement = (element, count) => {
+  footerElement.querySelector(element).textContent = count;
+};
+
+setFooterElement(`.footer__statistics p`, `${cards.length} movies inside`);
+
