@@ -1,3 +1,5 @@
+import {createElement} from '../util.js';
+
 const getGenresTemplate = (genres) => {
   return genres
   .map((genre) => `<span class="film-details__genre">${genre}</span>`)
@@ -31,7 +33,7 @@ export const createFilmDetailTemplate = (card) => {
   .slice(4);
 
   return (
-    `<section class="film-details" style="display: none;">
+    `<section class="film-details">
   <form class="film-details__inner" action="" method="get">
     <div class="form-details__top-container">
       <div class="film-details__close">
@@ -134,3 +136,26 @@ export const createFilmDetailTemplate = (card) => {
 </section>`
   );
 };
+
+export default class Detail {
+  constructor(card = null) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createFilmDetailTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
