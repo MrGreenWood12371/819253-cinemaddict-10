@@ -72,8 +72,7 @@ showMoreButtonElement.addEventListener(`click`, () => {
 });
 
 const setFooterElement = (element, count) => {
-  footerElement.querySelector(element).textContent = count;
+  footerElement.querySelector(element).textContent = `${count} movies inside`;
 };
 
-setFooterElement(`.footer__statistics p`, `${cards.length} movies inside`);
-
+setFooterElement(`.footer__statistics p`, cards.length);
