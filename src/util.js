@@ -8,3 +8,6 @@ export const getFilteredElement = (obj, elem, isFlag) => {
   .slice(0, 2)
   .filter((card) => card[elem]);
 };
+export const setElementTextContent = (container, element, count) => {
+  container.querySelector(element).textContent = `${count} movies inside`;
+};

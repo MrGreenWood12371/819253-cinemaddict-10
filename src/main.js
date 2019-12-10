@@ -6,7 +6,7 @@ import {getFiltersTemplate} from './components/filter.js';
 import {getShowMoreButtonTemplate} from './components/show-more-button.js';
 import {generateCards} from './mock/card.js';
 import {getUserRank} from './mock/user-rank.js';
-import {getElement} from './util.js';
+import {getElement, setFooterElement} from './util.js';
 import {getFilteredElement} from './util.js';
 import {FilmCount} from './constants.js';
 
@@ -71,8 +71,4 @@ showMoreButtonElement.addEventListener(`click`, () => {
   }
 });
 
-const setFooterElement = (element, count) => {
-  footerElement.querySelector(element).textContent = `${count} movies inside`;
-};
-
-setFooterElement(`.footer__statistics p`, cards.length);
+setFooterElement(footerElement, `.footer__statistics p`, cards.length);
