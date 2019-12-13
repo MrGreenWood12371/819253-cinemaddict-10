@@ -10,6 +10,7 @@ import {getUserRank} from './mock/user-rank.js';
 import {FilmCount, RenderPosition} from './constants.js';
 import {getElement, getFilteredElement, render, setElementTextContent, setList} from './util.js';
 
+
 export const cards = generateCards(FilmCount.ALL);
 
 const topRatedCards = getFilteredElement(cards, `rating`);
@@ -61,7 +62,7 @@ if (showMoreButtonElement) {
     showingCardsCount += FilmCount.LIST;
 
     setList(cards.slice(prevTasksCount, showingCardsCount), filmListContainerElement);
-
+    
     if (showingCardsCount >= cards.length) {
       showMoreButtonElement.remove();
     }
@@ -69,4 +70,3 @@ if (showMoreButtonElement) {
 }
 
 setElementTextContent(footerElement, `.footer__statistics p`, cards.length);
-

@@ -3,7 +3,6 @@ import {RenderPosition} from './constants.js';
 export const getRandomInt = (min, max) => min + Math.round(max * Math.random());
 export const getElement = (dom, identity) => dom.querySelector(identity);
 
-
 const footerElement = getElement(document, `.footer`);
 
 export const setElementTextContent = (container, element, count) => {
@@ -18,7 +17,7 @@ export const getFilteredElement = (obj, elem, isFlag) => {
   } else {
     sortElements = (prev, next) => next[elem] - prev[elem];
   }
-
+  
   return obj
   .slice()
   .sort(sortElements)
