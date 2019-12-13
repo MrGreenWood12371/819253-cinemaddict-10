@@ -1,5 +1,4 @@
-import {createElement} from '../util.js';
-
+import AbstractComponent from './abstract-component.js';
 export const getFilterTemplate = (watchListQuantity, historyQuantity, favoritesQuantity) => {
   return (
     `<nav class="main-navigation">
@@ -12,9 +11,9 @@ export const getFilterTemplate = (watchListQuantity, historyQuantity, favoritesQ
   );
 };
 
-export default class Filter {
+export default class Filter extends AbstractComponent {
   constructor(watchListQuantity = 0, historyQuantity = 0, favoritesQuantity = 0) {
-    this._element = null;
+    super();
     this._watchListQuantity = watchListQuantity;
     this._historyQuantity = historyQuantity;
     this._favoritesQuantity = favoritesQuantity;
@@ -22,17 +21,5 @@ export default class Filter {
 
   getTemplate() {
     return getFilterTemplate(this._watchListQuantity, this._historyQuantity, this._favoritesQuantity);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

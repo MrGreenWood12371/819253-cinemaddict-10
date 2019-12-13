@@ -7,8 +7,8 @@ import ShowMoreButtonComponent from './components/show-more-button.js';
 import UserRankComponent from './components/user-rank.js';
 import {generateCards} from './mock/card.js';
 import {getUserRank} from './mock/user-rank.js';
-import {getElement, getFilteredElement, render} from './util.js';
 import {FilmCount, RenderPosition} from './constants.js';
+import {getElement, getFilteredElement, render, setElementTextContent, setList} from './util.js';
 
 export const cards = generateCards(FilmCount.ALL);
 
@@ -33,51 +33,7 @@ render(mainElement, new MainContentComponent(cards.length).getElement());
 const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
 let showingCardsCount = FilmCount.LIST;
 
-const setList = (currentCards, targetElement) => currentCards.forEach((card) => {
-  const cardElement = new CardComponent(card).getElement();
-
-  render(targetElement, cardElement, RenderPosition.BEFOREEND);
-
-  const cardClickElements = cardElement.querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
-
-  const onCardClick = () => {
-    const detailComponent = new DetailComponent(card);
-    const detailElement = detailComponent.getElement();
-
-    const removeDetail = () => {
-      document.body.removeChild(detailElement);
-    };
-
-    const onCloseClick = () => {
-      removeDetail();
-      closeDetailElement.removeEventListener(`click`, onCloseClick);
-    };
-
-    const onEscKeyDown = (evt) => {
-      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-      if (isEscKey) {
-        removeDetail();
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    render(footerElement, detailElement, RenderPosition.AFTEREND);
-
-    const closeDetailElement = detailElement.querySelector(`.film-details__close-btn`);
-
-    closeDetailElement.addEventListener(`click`, onCloseClick);
-
-    document.addEventListener(`keydown`, onEscKeyDown);
-  };
-
-  for (let i = 0; i < cardClickElements.length; i++) {
-    cardClickElements[i].addEventListener(`click`, onCardClick);
-    cardClickElements[i].setAttribute(`style`, `cursor: pointer;`);
-  }
-});
-
-setList(cards.slice(0, showingCardsCount), filmListContainerElement);
+setList(cards.slice(0, showingCardsCount), filmListContainerElement, CardComponent, DetailComponent);
 
 render(filmListContainerElement, new ShowMoreButtonComponent().getElement(), RenderPosition.AFTEREND);
 
@@ -86,13 +42,13 @@ const topRatedContentElements = topRatedElements.querySelector(`.films-list__con
 const mostCommentedContentElements = mostCommentedElements.querySelector(`.films-list__container`);
 
 if (topRatedCards.length) {
-  setList(topRatedCards.slice(0, FilmCount.EXTRA), topRatedContentElements);
+  setList(topRatedCards.slice(0, FilmCount.EXTRA), topRatedContentElements, CardComponent, DetailComponent);
 } else {
   topRatedElements.remove();
 }
 
 if (mostCommentedCards.length) {
-  setList(mostCommentedCards.slice(0, FilmCount.EXTRA), mostCommentedContentElements);
+  setList(mostCommentedCards.slice(0, FilmCount.EXTRA), mostCommentedContentElements, CardComponent, DetailComponent);
 } else {
   mostCommentedElements.remove();
 }
@@ -112,9 +68,5 @@ if (showMoreButtonElement) {
   });
 }
 
-const setFooterElement = (element, count) => {
-  footerElement.querySelector(element).textContent = `${count} movies inside`;
-};
-
-setFooterElement(`.footer__statistics p`, cards.length);
+setElementTextContent(footerElement, `.footer__statistics p`, cards.length);
 

@@ -3,16 +3,22 @@ import {RenderPosition} from './constants.js';
 export const getRandomInt = (min, max) => min + Math.round(max * Math.random());
 export const getElement = (dom, identity) => dom.querySelector(identity);
 
-export const getFilteredElements = (obj, elem, isFlag) => {
-  const flagCheck = isFlag ? () => obj.slice()
-  .sort((prev, next) => next[elem].length - prev[elem].length)
-  .slice(0, 2)
-  .filter((card) => card[elem]) : () => obj.slice().sort((prev, next) => next[elem] - prev[elem]).slice(0, 2).filter((card) => card[elem]);
-  return flagCheck();
+
+const footerElement = getElement(document, `.footer`);
+
+export const setElementTextContent = (container, element, count) => {
+  container.querySelector(element).textContent = `${count} movies inside`;
 };
 
 export const getFilteredElement = (obj, elem, isFlag) => {
-  const sortElements = isFlag ? (prev, next) => next[elem].length - prev[elem].length : (prev, next) => next[elem] - prev[elem];
+  let sortElements = null;
+
+  if (isFlag) {
+    sortElements = (prev, next) => next[elem].length - prev[elem].length;
+  } else {
+    sortElements = (prev, next) => next[elem] - prev[elem];
+  }
+
   return obj
   .slice()
   .sort(sortElements)
@@ -42,3 +48,47 @@ export const render = (container, element, place = RenderPosition.BEFOREEND) => 
     }
   }
 };
+
+export const setList = (currentCards, targetElement, Card, Detail) => currentCards.forEach((card) => {
+  const cardElement = new Card(card).getElement();
+
+  render(targetElement, cardElement);
+
+  const cardClickElements = cardElement.querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
+
+  const onCardClick = () => {
+    const detailComponent = new Detail(card);
+    const detailElement = detailComponent.getElement();
+
+    const removeDetail = () => {
+      document.body.removeChild(detailElement);
+    };
+
+    const onCloseClick = () => {
+      removeDetail();
+      closeDetailElement.removeEventListener(`click`, onCloseClick);
+    };
+
+    const onEscKeyDown = (evt) => {
+      const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+      if (isEscKey) {
+        removeDetail();
+        document.removeEventListener(`keydown`, onEscKeyDown);
+      }
+    };
+
+    render(footerElement, detailElement, RenderPosition.AFTEREND);
+
+    const closeDetailElement = detailElement.querySelector(`.film-details__close-btn`);
+
+    closeDetailElement.addEventListener(`click`, onCloseClick);
+
+    document.addEventListener(`keydown`, onEscKeyDown);
+  };
+
+  for (let i = 0; i < cardClickElements.length; i++) {
+    cardClickElements[i].addEventListener(`click`, onCardClick);
+    cardClickElements[i].setAttribute(`style`, `cursor: pointer;`);
+  }
+});
