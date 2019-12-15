@@ -1,3 +1,5 @@
+import AbstractComponent from './abstract-component.js';
+
 export const createCardTemplate = (card) => {
   const {name, poster, description, releaseDate, rating, runtime, genres, comments} = card;
 
@@ -23,3 +25,14 @@ export const createCardTemplate = (card) => {
         </article>`
   );
 };
+
+export default class Card extends AbstractComponent {
+  constructor(card = null) {
+    super();
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._card);
+  }
+}
