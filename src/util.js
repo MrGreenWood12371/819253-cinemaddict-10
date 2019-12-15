@@ -15,7 +15,7 @@ export const getFilteredElement = (obj, elem, isFlag) => {
   } else {
     sortElements = (prev, next) => next[elem] - prev[elem];
   }
-
+  
   return obj
   .slice()
   .sort(sortElements)

@@ -5,12 +5,12 @@ import PageController from './controllers/page-controller.js';
 import {FilmCount} from './constants.js';
 import {getElement, render, setElementTextContent} from './util.js';
 
+
 export const cards = generateCards(FilmCount.ALL);
 
 const headerElement = getElement(document, `.header`);
 const footerElement = getElement(document, `.footer`);
 const mainElement = getElement(document, `.main`);
-
 const userRankComponent = new UserRankComponent(getUserRank()).getElement();
 render(headerElement, userRankComponent);
 
