@@ -1,13 +1,12 @@
-import CardComponent from '../components/card.js';
-import DetailComponent from '../components/filmDetail.js';
 import FilterComponent from '../components/filter.js';
 import SortComponent from '../components/sort.js';
 import MainContentComponent from '../components/main.js';
 import ShowMoreButtonComponent from '../components/show-more-button.js';
-import {render, getElement, getFilteredElement} from '../util.js';
+import {getElement, getFilteredElement} from '../util.js';
+import {render} from '../utils/render.js';
 import {SortType, RenderPosition, FilmCount} from '../constants.js';
 import {getFilmsQuantity} from '../main.js';
-
+import {setList} from '../utils/setList.js';
 export default class PageController {
   constructor(container) {
     this._container = container;
@@ -15,66 +14,19 @@ export default class PageController {
 
   render(cards) {
     const mainElement = getElement(document, `.main`);
-    const footerElement = getElement(document, `.footer`);
     const filterComponent = new FilterComponent(getFilmsQuantity(`isOnWatchList`), getFilmsQuantity(`isOnHistory`), getFilmsQuantity(`isOnFavorites`));
 
     render(this._container, filterComponent.getElement());
 
     render(this._container, new MainContentComponent(cards.length).getElement());
 
-    const setList = (currentCards, targetElement) => currentCards.forEach((card) => {
-      const cardElement = new CardComponent(card).getElement();
-
-      render(targetElement, cardElement);
-
-      const cardClickElements = cardElement.querySelectorAll(`.film-card__poster, .film-card__title, .film-card__comments`);
-
-      const onCardClick = () => {
-        const detailComponent = new DetailComponent(card);
-        const detailElement = detailComponent.getElement();
-
-        const removeDetail = () => {
-          document.body.removeChild(detailElement);
-        };
-
-        const onCloseClick = () => {
-          removeDetail();
-          closeDetailElement.removeEventListener(`click`, onCloseClick);
-        };
-
-        const onEscKeyDown = (evt) => {
-          const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-          if (isEscKey) {
-            removeDetail();
-            document.removeEventListener(`keydown`, onEscKeyDown);
-          }
-        };
-
-        render(footerElement, detailElement, RenderPosition.AFTEREND);
-
-        const closeDetailElement = detailElement.querySelector(`.film-details__close-btn`);
-
-        closeDetailElement.addEventListener(`click`, onCloseClick);
-
-        document.addEventListener(`keydown`, onEscKeyDown);
-      };
-
-      for (let i = 0; i < cardClickElements.length; i++) {
-        cardClickElements[i].addEventListener(`click`, onCardClick);
-        cardClickElements[i].setAttribute(`style`, `cursor: pointer;`);
-      }
-    });
-
     const filmListContainerElement = mainElement.querySelector(`.films-list .films-list__container`);
     let showingCardsCount = FilmCount.LIST;
     setList(cards.slice(0, showingCardsCount), filmListContainerElement);
 
     let updatedCards = cards;
-    const sortComponent = new SortComponent();
-    render(filterComponent.getElement(), sortComponent.getElement(), RenderPosition.AFTEREND);
-    sortComponent.setSortTypeChangeHandler((sortType) => {
 
+    const sortElements = (sortType) => {
       switch (sortType) {
         case SortType.DATE:
           updatedCards = cards
@@ -90,6 +42,13 @@ export default class PageController {
           updatedCards = cards;
           break;
       }
+    };
+
+    const sortComponent = new SortComponent();
+    render(filterComponent.getElement(), sortComponent.getElement(), RenderPosition.AFTEREND);
+    sortComponent.setSortTypeChangeHandler((sortType) => {
+
+      sortElements(sortType);
 
       filmListContainerElement.innerHTML = ``;
       setList(updatedCards.slice(0, showingCardsCount), filmListContainerElement);

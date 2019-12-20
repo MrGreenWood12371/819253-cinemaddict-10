@@ -3,7 +3,8 @@ import {generateCards} from './mock/card.js';
 import {getUserRank} from './mock/user-rank.js';
 import PageController from './controllers/page-controller.js';
 import {FilmCount} from './constants.js';
-import {getElement, render, setElementTextContent} from './util.js';
+import {getElement, setElementTextContent} from './util.js';
+import {render} from './utils/render.js';
 
 export const cards = generateCards(FilmCount.ALL);
 
