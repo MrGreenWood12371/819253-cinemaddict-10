@@ -6,12 +6,12 @@ import {FilmCount} from './constants.js';
 import {getElement, setElementTextContent} from './util.js';
 import {render} from './utils/render.js';
 
+
 export const cards = generateCards(FilmCount.ALL);
 
 const headerElement = getElement(document, `.header`);
 const footerElement = getElement(document, `.footer`);
 const mainElement = getElement(document, `.main`);
-
 const userRankComponent = new UserRankComponent(getUserRank()).getElement();
 render(headerElement, userRankComponent);
 
